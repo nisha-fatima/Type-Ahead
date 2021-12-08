@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Type Ahead 👀</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <form class="search-form">
+    <input type="text" class="search" placeholder="City or Country">
+    <ul class="suggestions">
+      <li>Filter for a city</li>
+      <li>or a country</li>
+    </ul>
+  </form>
+<script>
+
+const cities = [];
+
+
+fetch("https://countriesnow.space/api/v0.1/countries/population/cities")
+.then(blob => blob.json())
+   .then(data => {let allCities = data.data; cities.push(...allCities)})
+
+   console.log(cities)
+
+function findMatches(wordToMatch, cities) {
+  return cities.filter(place => {
+  // here we need to figure out if the city or state matches what was searched
+  const regex = new RegExp(wordToMatch, 'gi');
+  return place.city.match(regex) || place.country.match(regex)
+  });
+}
+
+
+function displayMatches(){
+const matchArray = findMatches(this.value, cities)
+const html = matchArray.map(place => {
+  // const regex = new RegExp(this.value, 'gi')
+  const cityName = place.city
+  const countryName = place.country
+  return `
+    <li>
+      <span class="name">${cityName}, ${countryName}</span>
+    </li>
+  `;
+}).join('');
+ suggestions.innerHTML = html;
+}
+
+const searchInput = document.querySelector('.search');
+const suggestions = document.querySelector('.suggestions');
+
+searchInput.addEventListener('change', displayMatches)
+searchInput.addEventListener('keyup', displayMatches)
+
+</script>
+</body>
+</html>
